@@ -1,4 +1,4 @@
-from wtforms import StringField,validators,EmailField,PasswordField,SubmitField,BooleanField
+from wtforms import StringField,validators,EmailField,PasswordField,SubmitField,BooleanField,TextAreaField
 from wtforms.validators import Email,DataRequired,length,EqualTo,ValidationError
 from flask_login import current_user
 from flask_wtf.file import FileField, FileAllowed
@@ -31,7 +31,7 @@ class RegisterationForm(FlaskForm):
         if user:
             raise ValidationError('Name is alredy taken please try a different one!')
 
-    def validate_Email(self, email):
+    def validate_Email(self, Email):
         user = Users.query.filter_by(Email=Email.data).first()
         if user:
             raise ValidationError('Email is alredy taken please try a different one!')
@@ -56,7 +56,7 @@ class UpdateAccountForm(FlaskForm):
     Email = StringField(
         'Email', validators=[DataRequired(),Email()]
     )
-    picture = FileField('update your profile picture', FileAllowed(['jpg', 'png']))
+    picture = FileField('update your profile picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('update')
     
 
@@ -66,8 +66,13 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('Name is alredy taken please try a different one!')
 
-    def validate_Email(self, email):
+    def validate_Email(self, Email):
         if Email != current_user:
             user = Users.query.filter_by(Email=Email).first()
             if user:
                 raise ValidationError('Email is alredy taken please try a different one!')
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('content', validators=[DataRequired()])
+    submit = SubmitField('Post')
